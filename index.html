@@ -293,8 +293,8 @@ footer { text-align: center; margin-top: 28px; font-size: 12px; color: var(--gri
       <p class="help">Para preparar tu pedido y coordinar la entrega.</p>
       <div class="field"><label>Nombre completo <span class="required">*</span></label><input type="text" id="nombre" placeholder="Ej: Juan Pérez"></div>
       <div class="field-row">
-        <div class="field"><label>Correo electrónico <span class="required">*</span></label><input type="email" id="correo-cliente" placeholder="tu@correo.com"></div>
-        <div class="field"><label>Teléfono / WhatsApp <span class="required">*</span></label><input type="tel" id="telefono-cliente" placeholder="8888-8888"></div>
+        <div class="field"><label>Correo electrónico <span class="opcional">(opcional)</span></label><input type="email" id="correo-cliente" placeholder="tu@correo.com"></div>
+        <div class="field"><label>Teléfono / WhatsApp <span class="opcional">(opcional)</span></label><input type="tel" id="telefono-cliente" placeholder="8888-8888"></div>
       </div>
       <div class="field">
         <label>Zona o dirección de entrega <span class="required">*</span></label>
@@ -593,7 +593,7 @@ document.getElementById("btn-next-4").addEventListener("click", function() {
   var correo = document.getElementById("correo-cliente").value.trim();
   var tel = document.getElementById("telefono-cliente").value.trim();
   if (!nom || !zon) { alert("Completa nombre y zona de entrega."); return; }
-  if (!correo || !tel) { alert("Ingresa tu correo y teléfono."); return; }
+  // correo y teléfono son opcionales
   if (!fec) { alert("Selecciona una fecha de entrega."); return; }
   if (!estado.factura) { alert("Indica si necesitas factura electronica."); return; }
   estado.nombre = nom; estado.zona = zon;
