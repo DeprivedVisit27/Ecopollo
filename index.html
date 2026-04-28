@@ -383,6 +383,73 @@ var productos = [
 
 var adicionalSeleccionados = {};
 var catAdicActiva = 'EMBUTIDOS';
+
+var ADICIONALES = {
+  EMBUTIDOS: [
+    {cod:"A-001",nom:"Salchichón Parrillero 500g",precio:1850,und:"UND"},
+    {cod:"A-002",nom:"Salchichón Especial 500g",precio:1750,und:"UND"},
+    {cod:"A-003",nom:"Salchichón Granel 4kg",precio:13200,und:"UND"},
+    {cod:"A-004",nom:"Salchicha Familiar 500g",precio:1600,und:"UND"},
+    {cod:"A-005",nom:"Salchicha Ahumada 500g",precio:1700,und:"UND"},
+    {cod:"A-006",nom:"Mortadela Bologna 500g",precio:1550,und:"UND"},
+    {cod:"A-007",nom:"Mortadela Económica",precio:1400,und:"UND"},
+    {cod:"A-008",nom:"Jamón Cocido 500g",precio:2100,und:"UND"},
+    {cod:"A-009",nom:"Jamón Pavo 500g",precio:2300,und:"UND"},
+    {cod:"A-010",nom:"Paté Patecito",precio:890,und:"UND"},
+    {cod:"A-011",nom:"Tocineta",precio:2800,und:"UND"},
+    {cod:"A-012",nom:"Chorizo Parrillero",precio:2200,und:"UND"}
+  ],
+  CONGELADOS: [
+    {cod:"C-001",nom:"Nuggets Pollo 650g",precio:3200,und:"UND"},
+    {cod:"C-002",nom:"Strips Empanizados 650g",precio:3400,und:"UND"},
+    {cod:"C-003",nom:"Strips Empanizados 3kg",precio:12800,und:"UND"},
+    {cod:"C-004",nom:"Alitas Empanizadas",precio:3600,und:"UND"},
+    {cod:"C-005",nom:"Muslitos Empanizados",precio:3500,und:"UND"},
+    {cod:"C-006",nom:"Torta Hamburgues 4U",precio:2800,und:"UND"},
+    {cod:"C-007",nom:"Torta Hamburgues 28U",precio:14500,und:"UND"},
+    {cod:"C-008",nom:"Medallones Pollo Rey",precio:3800,und:"UND"},
+    {cod:"C-009",nom:"Pulled Pork",precio:5200,und:"KG"},
+    {cod:"C-010",nom:"Carne Molida Res",precio:4800,und:"KG"},
+    {cod:"C-011",nom:"Burritos Pollo",precio:2900,und:"UND"},
+    {cod:"C-012",nom:"Chicharrón Cerdo",precio:4200,und:"KG"}
+  ],
+  PAPAS: [
+    {cod:"P-001",nom:"Papa Cavendish 1kg",precio:1200,und:"UND"},
+    {cod:"P-002",nom:"Papa Brakes Ecofrost",precio:8500,und:"UND"},
+    {cod:"P-003",nom:"Papa Fritas Pomclaire",precio:9200,und:"UND"},
+    {cod:"P-004",nom:"Papa Miglio",precio:8800,und:"UND"}
+  ],
+  TILAPIA: [
+    {cod:"T-001",nom:"Tilapia Fillet 3-5 pulg",precio:10500,und:"UND"},
+    {cod:"T-002",nom:"Tilapia Entera",precio:8800,und:"KG"}
+  ],
+  CONDIMENTOS: [
+    {cod:"CO-001",nom:"Empanizador EcoPollo",precio:2400,und:"UND"},
+    {cod:"CO-002",nom:"Empanizador As de Oros",precio:2200,und:"UND"},
+    {cod:"CO-003",nom:"Batter Crispy",precio:3100,und:"UND"},
+    {cod:"CO-004",nom:"Marinador Pollo",precio:1800,und:"UND"}
+  ],
+  LACTEOS: [
+    {cod:"L-001",nom:"Queso Americano 640g",precio:4200,und:"UND"},
+    {cod:"L-002",nom:"Queso Americano Caja",precio:48000,und:"UND"},
+    {cod:"L-003",nom:"Salsa Cheddar",precio:3800,und:"UND"}
+  ],
+  HUEVO: [
+    {cod:"H-001",nom:"Huevo Cartón 15U",precio:3200,und:"UND"},
+    {cod:"H-002",nom:"Huevo Cartón 30U",precio:6100,und:"UND"}
+  ],
+  "OTRA PROTEINA": [
+    {cod:"OP-001",nom:"Chuleta de Cerdo",precio:3800,und:"KG"},
+    {cod:"OP-002",nom:"Costilla de Cerdo",precio:4200,und:"KG"},
+    {cod:"OP-003",nom:"Posta de Cerdo",precio:4500,und:"KG"}
+  ]
+};
+
+var ADIC_LABELS = {
+  EMBUTIDOS:"🌭 Embutidos", CONGELADOS:"❄️ Congelados", PAPAS:"🍟 Papas",
+  TILAPIA:"🐟 Tilapia", CONDIMENTOS:"🧂 Condimentos", LACTEOS:"🧀 Lácteos",
+  HUEVO:"🥚 Huevo", "OTRA PROTEINA":"🥩 Otra Proteína"
+};
 var estado = {
   frecuencia:null, volumen:null, productosSeleccionados:{},
   nombre:"", zona:"", coordenadas:null,
@@ -574,7 +641,32 @@ function actualizarSeleccion() {
 })();
 
 renderCatalogo();
-document.getElementById("btn-next-3").addEventListener("click", function() { irAPaso(4); });
+document.getElementById("btn-next-3").addEventListener("click", function() {
+  var u = null;
+  try { u = JSON.parse(localStorage.getItem('ep-usuario') || 'null'); } catch(e){}
+  if (u && u.nombre && u.correo) {
+    // Sesion activa: prellenar y saltar paso 4
+    estado.nombre = u.nombre;
+    estado.correoCliente = u.correo;
+    estado.telefonoCliente = u.telefono || '';
+    var ni = document.getElementById('nombre'); if(ni) ni.value = u.nombre;
+    var ci = document.getElementById('correo-cliente'); if(ci) ci.value = u.correo;
+    var ti = document.getElementById('telefono-cliente'); if(ti) ti.value = u.telefono || '';
+    var fi = document.getElementById('fecha-entrega');
+    estado.fechaEntrega = fi ? fi.value : '';
+    if (!estado.factura) {
+      estado.factura = 'no';
+      document.querySelectorAll('#toggle-factura .toggle-btn').forEach(function(b) {
+        b.classList.toggle('selected', b.dataset.factura === 'no');
+      });
+    }
+    estado.segmento = calcularSegmento();
+    renderAdicionales();
+    irAPaso(5);
+  } else {
+    irAPaso(4);
+  }
+});
 
 document.querySelectorAll('#toggle-factura .toggle-btn').forEach(function(b) {
   b.addEventListener("click", function() {
