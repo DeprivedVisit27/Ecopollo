@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoPollo Premium — Cotiza tu pedido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --amarillo-eco: #F4D03F;
+  --verde-eco: #6BA644;
+  --verde-oscuro: #4A7C2C;
+  --crema: #FEFAE0;
+  --tinta: #1A1A1A;
+  --gris: #6C757D;
+  --gris-suave: #E9ECEF;
+  --whatsapp: #25D366;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--crema); color: var(--tinta); line-height: 1.5; min-height: 100vh; }
+body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at top left, rgba(107, 166, 68, 0.12), transparent 50%), radial-gradient(ellipse at bottom right, rgba(244, 208, 63, 0.10), transparent 50%); pointer-events: none; z-index: 0; }
+body::after { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1; opacity: 0.6; }
+.container { position: relative; z-index: 2; max-width: 800px; margin: 0 auto; padding: 20px 20px 80px; }
+.admin-btn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: var(--verde-oscuro); color: white; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s ease; z-index: 1000; text-decoration: none; }
+.admin-btn:hover { background: var(--verde-eco); transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-overlay.show { display: flex; }
+.modal-box { background: white; border-radius: 20px; padding: 36px 32px; max-width: 360px; width: 90%; box-shadow: 0 24px 60px rgba(0,0,0,0.3); animation: pop 0.3s cubic-bezier(0.34,1.56,0.64,1); text-align: center; }
+.modal-box h3 { font-family: 'Fraunces', serif; font-size: 22px; color: var(--verde-oscuro); margin-bottom: 6px; }
+.modal-box p { font-size: 13px; color: var(--gris); margin-bottom: 20px; }
+.modal-box input { width: 100%; padding: 14px 16px; font-family: inherit; font-size: 15px; border: 2px solid var(--gris-suave); border-radius: 12px; margin-bottom: 12px; text-align: center; letter-spacing: 0.15em; transition: all 0.2s; }
+.modal-box input:focus { outline: none; border-color: var(--verde-eco); box-shadow: 0 0 0 3px rgba(107,166,68,0.15); }
+.modal-error { color: #BC4749; font-size: 13px; margin-bottom: 10px; min-height: 18px; }
+.modal-actions { display: flex; gap: 10px; }
+.modal-actions button { flex: 1; padding: 14px; border: none; border-radius: 12px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.modal-cancel { background: var(--gris-suave); color: var(--gris); }
+.modal-cancel:hover { background: #ddd; }
+.modal-confirm { background: var(--verde-eco); color: white; }
+.modal-confirm:hover { background: var(--verde-oscuro); }
+header { text-align: center; margin-bottom: 30px; animation: fadeUp 0.6s ease-out; }
+.logo-eco { width: 140px; height: auto; margin: 0 auto 16px; display: block; }
+.tagline { font-size: 13px; color: var(--gris); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 4px; }
+.contact-info { font-size: 12px; color: var(--verde-eco); font-weight: 600; }
+.contact-info a { color: var(--verde-eco); text-decoration: none; margin: 0 8px; }
+.contact-info a:hover { text-decoration: underline; }
+.hero { text-align: center; margin-bottom: 48px; animation: fadeUp 0.7s ease-out 0.1s backwards; }
+.hero h1 { font-family: 'Fraunces', serif; font-weight: 800; font-size: clamp(32px, 7vw, 48px); line-height: 1.05; color: var(--verde-oscuro); margin-bottom: 12px; }
+.hero p { font-size: 16px; color: var(--gris); max-width: 480px; margin: 0 auto; }
+.progress { display: flex; justify-content: center; gap: 8px; margin-bottom: 28px; }
+.progress-dot { width: 32px; height: 4px; background: var(--gris-suave); border-radius: 2px; transition: background 0.4s ease; }
+.progress-dot.active { background: var(--verde-eco); }
+.progress-dot.done { background: var(--amarillo-eco); }
+.card { background: white; border-radius: 24px; padding: 36px 32px; box-shadow: 0 1px 0 rgba(75, 124, 44, 0.08), 0 12px 32px -8px rgba(75, 124, 44, 0.15), 0 24px 80px -24px rgba(75, 124, 44, 0.18); border: 1px solid rgba(75, 124, 44, 0.08); animation: fadeUp 0.7s ease-out 0.2s backwards; }
+.step { display: none; }
+.step.active { display: block; animation: slideIn 0.4s ease-out; }
+.step-label { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--verde-eco); margin-bottom: 8px; }
+.step h2 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 26px; line-height: 1.2; color: var(--verde-oscuro); margin-bottom: 8px; }
+.step .help { color: var(--gris); font-size: 14px; margin-bottom: 24px; }
+.options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+.option { display: flex; align-items: center; gap: 16px; padding: 18px 20px; background: white; border: 2px solid var(--gris-suave); border-radius: 16px; cursor: pointer; transition: all 0.2s ease; text-align: left; width: 100%; font-family: inherit; }
+.option:hover { border-color: var(--verde-eco); background: rgba(107, 166, 68, 0.08); transform: translateY(-1px); }
+.option.selected { border-color: var(--verde-eco); background: rgba(107, 166, 68, 0.12); box-shadow: 0 0 0 3px rgba(107, 166, 68, 0.1); }
+.option-emoji { font-size: 28px; flex-shrink: 0; }
+.option-text { flex: 1; }
+.option-title { font-weight: 600; font-size: 15px; color: var(--tinta); margin-bottom: 2px; }
+.option-desc { font-size: 13px; color: var(--gris); }
+.field { margin-bottom: 18px; }
+.field label { display: block; font-size: 13px; font-weight: 600; color: var(--verde-oscuro); margin-bottom: 6px; }
+.field label .required { color: #BC4749; }
+.field label .opcional { color: var(--gris); font-weight: 400; }
+.field input, .field textarea { width: 100%; padding: 14px 16px; font-family: inherit; font-size: 15px; color: var(--tinta); background: var(--crema); border: 2px solid var(--gris-suave); border-radius: 12px; transition: all 0.2s ease; }
+.field input:focus, .field textarea:focus { outline: none; border-color: var(--verde-eco); background: white; box-shadow: 0 0 0 3px rgba(107, 166, 68, 0.15); }
+.field textarea { resize: vertical; min-height: 70px; }
+.catalogo { background: rgba(244, 208, 63, 0.15); border-radius: 16px; padding: 20px; margin-bottom: 24px; border: 1px solid rgba(107, 166, 68, 0.2); }
+.catalogo-label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--verde-oscuro); margin-bottom: 14px; }
+.productos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.producto-card { background: white; border: 2px solid var(--gris-suave); border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+.producto-card:hover { border-color: var(--verde-eco); box-shadow: 0 4px 12px rgba(107, 166, 68, 0.15); transform: translateY(-2px); }
+.producto-card.selected { border-color: var(--verde-eco); background: rgba(107, 166, 68, 0.08); box-shadow: 0 0 0 2px rgba(107, 166, 68, 0.15); }
+.producto-code { display: block; font-size: 10px; font-weight: 700; color: var(--verde-eco); letter-spacing: 0.05em; margin-bottom: 4px; }
+.producto-nombre { display: block; font-size: 12px; font-weight: 600; color: var(--tinta); margin-bottom: 6px; }
+.producto-precio { display: block; font-size: 13px; font-weight: 700; color: var(--verde-oscuro); }
+.cantidad-input { width: 100%; margin-top: 6px; padding: 6px 8px; font-size: 12px; border: 1px solid var(--gris-suave); border-radius: 6px; text-align: center; }
+.producto-card.selected .cantidad-input { border-color: var(--verde-eco); background: white; }
+.resumen-productos { background: rgba(244, 208, 63, 0.25); border-radius: 12px; padding: 12px; margin-bottom: 16px; font-size: 12px; }
+.resumen-productos p { margin: 0; color: var(--tinta); }
+.actions { display: flex; gap: 12px; margin-top: 8px; }
+.btn { flex: 1; padding: 16px 24px; font-family: inherit; font-size: 15px; font-weight: 700; border: none; border-radius: 14px; cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.01em; }
+.btn-primary { background: var(--verde-eco); color: white; }
+.btn-primary:hover { background: var(--verde-oscuro); transform: translateY(-1px); box-shadow: 0 8px 20px -8px rgba(107, 166, 68, 0.5); }
+.btn-primary:disabled { background: var(--gris-suave); color: var(--gris); cursor: not-allowed; transform: none; }
+.btn-ghost { background: transparent; color: var(--gris); border: 2px solid var(--gris-suave); flex: 0 0 auto; padding: 16px 20px; }
+.btn-ghost:hover { border-color: var(--verde-oscuro); color: var(--verde-oscuro); }
+.summary { background: rgba(107, 166, 68, 0.08); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(107, 166, 68, 0.15); }
+.summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; border-bottom: 1px dashed rgba(107, 166, 68, 0.15); gap: 12px; }
+.summary-row:last-child { border-bottom: none; }
+.summary-row .label { color: var(--verde-oscuro); font-weight: 500; flex-shrink: 0; }
+.summary-row .value { color: var(--tinta); font-weight: 600; text-align: right; }
+.btn-whatsapp { background: var(--whatsapp); color: white; width: 100%; padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s ease; text-decoration: none; }
+.btn-whatsapp:hover { background: #1FB855; transform: translateY(-1px); box-shadow: 0 12px 28px -8px rgba(37, 211, 102, 0.5); }
+.btn-whatsapp svg { width: 22px; height: 22px; }
+.confirm-icon { width: 64px; height: 64px; background: var(--verde-eco); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; margin: 0 auto 16px; animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.toggle-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.toggle-btn { padding: 14px 16px; background: white; border: 2px solid var(--gris-suave); border-radius: 12px; font-family: inherit; font-size: 14px; font-weight: 600; color: var(--tinta); cursor: pointer; transition: all 0.2s ease; }
+.toggle-btn:hover { border-color: var(--verde-eco); }
+.toggle-btn.selected { border-color: var(--verde-eco); background: rgba(107, 166, 68, 0.12); color: var(--verde-oscuro); box-shadow: 0 0 0 3px rgba(107, 166, 68, 0.1); }
+.conditional { display: none; margin-top: -8px; padding-top: 4px; animation: slideDown 0.3s ease-out; }
+.conditional.show { display: block; }
+.loading { display: none; text-align: center; padding: 20px; }
+.loading.show { display: block; }
+.spinner { display: inline-block; width: 30px; height: 30px; border: 3px solid var(--gris-suave); border-top-color: var(--verde-eco); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+footer { text-align: center; margin-top: 32px; font-size: 12px; color: var(--gris); }
+.social-links { margin-top: 12px; }
+.social-links a { display: inline-block; margin: 0 6px; color: var(--verde-eco); text-decoration: none; font-weight: 600; font-size: 11px; }
+.social-links a:hover { text-decoration: underline; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 200px; } }
+@keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+@media (max-width: 600px) {
+  .container { padding: 16px 16px 60px; }
+  .card { padding: 28px 22px; border-radius: 20px; }
+  .step h2 { font-size: 22px; }
+  .actions { flex-direction: column-reverse; }
+  .btn-ghost { width: 100%; }
+  .productos-grid { grid-template-columns: repeat(2, 1fr); }
+  .contact-info a { display: block; margin: 4px 0; }
+}
+</style>
+</head>
+<body>
+
+<button class="admin-btn" title="Panel Administrativo" onclick="abrirModalAdmin()">⚙️</button>
+
+<!-- Modal de contraseña admin -->
+<div class="modal-overlay" id="modal-admin">
+  <div class="modal-box">
+    <h3>🔒 Acceso Admin</h3>
+    <p>Ingresa la contraseña para acceder al panel administrativo</p>
+    <input type="password" id="admin-password" placeholder="••••••••" maxlength="30">
+    <div class="modal-error" id="modal-error"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="cerrarModalAdmin()">Cancelar</button>
+      <button class="modal-confirm" onclick="verificarAdmin()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <header>
+    <img src="ecopollo_logo.jpg" alt="EcoPollo Premium" class="logo-eco">
+    <div class="tagline">Pollo fresco desde 2004</div>
+    <div class="contact-info">
+      📍 Cartago, Costa Rica<br>
+      <a href="https://wa.me/50663144171" target="_blank">📱 WhatsApp</a>
+      <a href="https://www.facebook.com/profile.php?id=61558089819855" target="_blank">👍 Facebook</a>
+    </div>
+  </header>
+  <section class="hero">
+    <h1>Cotiza tu pedido</h1>
+    <p>Cuéntanos qué necesitas y te conectamos por WhatsApp con la mejor propuesta.</p>
+  </section>
+  <div class="progress">
+    <div class="progress-dot active" data-step="1"></div>
+    <div class="progress-dot" data-step="2"></div>
+    <div class="progress-dot" data-step="3"></div>
+    <div class="progress-dot" data-step="4"></div>
+    <div class="progress-dot" data-step="5"></div>
+  </div>
+  <div class="card">
+    <div class="step active" data-step="1">
+      <div class="step-label">Paso 1 de 5</div>
+      <h2>¿Cada cuánto sueles pedir pollo?</h2>
+      <p class="help">Para coordinar la mejor logística de entrega contigo.</p>
+      <div class="options" id="opt-frecuencia">
+        <button class="option" data-value="esporadica"><span class="option-emoji">🥗</span><span class="option-text"><span class="option-title">De vez en cuando</span><span class="option-desc">Cuando hay reunión, fin de semana, ocasiones</span></span></button>
+        <button class="option" data-value="semanal"><span class="option-emoji">📅</span><span class="option-text"><span class="option-title">Aproximadamente una vez por semana</span><span class="option-desc">Compra regular, planificada</span></span></button>
+        <button class="option" data-value="frecuente"><span class="option-emoji">🔁</span><span class="option-text"><span class="option-title">Varias veces por semana</span><span class="option-desc">Necesito reposición constante</span></span></button>
+        <button class="option" data-value="diaria"><span class="option-emoji">⚡</span><span class="option-text"><span class="option-title">Diario o casi todos los días</span><span class="option-desc">Operación de alto consumo</span></span></button>
+      </div>
+      <div class="actions"><button class="btn btn-primary" id="btn-next-1" disabled>Continuar</button></div>
+    </div>
+    <div class="step" data-step="2">
+      <div class="step-label">Paso 2 de 5</div>
+      <h2>¿Aproximadamente cuánto pollo por pedido?</h2>
+      <p class="help">Si no estás seguro, una estimación está perfecta.</p>
+      <div class="options" id="opt-volumen">
+        <button class="option" data-value="muy_bajo"><span class="option-emoji">🍗</span><span class="option-text"><span class="option-title">Hasta 5 kg</span><span class="option-desc">Equivalente a 1–2 pollos enteros aprox.</span></span></button>
+        <button class="option" data-value="bajo"><span class="option-emoji">🥡</span><span class="option-text"><span class="option-title">Entre 5 y 20 kg</span><span class="option-desc">Pedido mediano</span></span></button>
+        <button class="option" data-value="medio"><span class="option-emoji">📦</span><span class="option-text"><span class="option-title">Entre 20 y 80 kg</span><span class="option-desc">Pedido grande</span></span></button>
+        <button class="option" data-value="alto"><span class="option-emoji">🚚</span><span class="option-text"><span class="option-title">Más de 80 kg</span><span class="option-desc">Volumen alto</span></span></button>
+      </div>
+      <div class="actions"><button class="btn btn-ghost" data-back>← Atrás</button><button class="btn btn-primary" id="btn-next-2" disabled>Continuar</button></div>
+    </div>
+    <div class="step" data-step="3">
+      <div class="step-label">Paso 3 de 5</div>
+      <h2>¿Qué productos necesitas?</h2>
+      <p class="help">Haz clic en los productos que te interesan e indica la cantidad en kg.</p>
+      <div class="catalogo"><div class="catalogo-label">Nuestros productos:</div><div class="productos-grid" id="catalogo-productos"></div></div>
+      <div class="resumen-productos" id="resumen-productos" style="display: none;"><p id="resumen-texto"></p></div>
+      <div class="actions"><button class="btn btn-ghost" data-back>← Atrás</button><button class="btn btn-primary" id="btn-next-3" disabled>Continuar</button></div>
+    </div>
+    <div class="step" data-step="4">
+      <div class="step-label">Paso 4 de 5</div>
+      <h2>Tus datos de contacto</h2>
+      <p class="help">Para preparar tu pedido y coordinar la entrega.</p>
+      <div class="field"><label>Nombre completo <span class="required">*</span></label><input type="text" id="nombre" placeholder="Ej: Juan Pérez" required></div>
+      <div class="field"><label>Zona o dirección de entrega <span class="required">*</span></label><input type="text" id="zona" placeholder="Ej: Concepción, Cartago" required></div>
+      <div class="field"><label>¿Necesitas factura electrónica? <span class="required">*</span></label><div class="toggle-group" id="toggle-factura"><button type="button" class="toggle-btn" data-factura="no">No, gracias</button><button type="button" class="toggle-btn" data-factura="si">Sí, por favor</button></div><div class="conditional" id="campo-factura"><label style="margin-top: 6px;">A nombre de <span class="opcional">(razón social o cédula jurídica)</span></label><input type="text" id="razon-social" placeholder="Ej: Soda Doña Marta S.A."></div></div>
+      <div class="field"><label>Comentario u observaciones <span class="opcional">(opcional)</span></label><textarea id="comentario" placeholder="Productos que te interesan, preferencias de corte, fecha de entrega, etc."></textarea></div>
+      <div class="actions"><button class="btn btn-ghost" data-back>← Atrás</button><button class="btn btn-primary" id="btn-next-4">Continuar</button></div>
+    </div>
+    <div class="step" data-step="5">
+      <div class="confirm-icon">✓</div>
+      <div class="step-label" style="text-align:center;display:block;">Listo para enviar</div>
+      <h2 style="text-align:center;">Conectemos por WhatsApp</h2>
+      <p class="help" style="text-align:center;">Tu información está lista. Al hacer clic en el botón, abriremos WhatsApp.</p>
+      <div class="summary" id="summary"></div>
+      <div class="loading" id="loading"><div class="spinner"></div><p style="margin-top: 12px; color: var(--gris); font-size: 14px;">Guardando tu información...</p></div>
+      <a href="#" class="btn-whatsapp" id="btn-whatsapp" target="_blank" rel="noopener" style="display: none;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.197.295-.771.964-.944 1.162-.175.195-.349.21-.646.075-.3-.15-1.263-.465-2.403-1.485-.888-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.136-.135.301-.345.451-.523.146-.181.194-.301.297-.496.1-.21.049-.375-.025-.524-.075-.15-.672-1.62-.922-2.206-.24-.584-.487-.51-.672-.51-.172-.015-.371-.015-.571-.015-.2 0-.523.074-.797.359-.273.3-1.045 1.02-1.045 2.475s1.07 2.865 1.219 3.075c.149.18 2.095 3.195 5.076 4.485.713.3 1.27.48 1.704.629.714.227 1.365.195 1.88.121.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345m-5.446 7.443h-.016c-1.77 0-3.524-.48-5.055-1.38l-.36-.214-3.75.975 1.005-3.645-.239-.375a9.869 9.869 0 01-1.516-5.26c0-5.445 4.455-9.885 9.942-9.885 2.654 0 5.145 1.035 7.021 2.91 1.875 1.875 2.909 4.365 2.909 7.02-.004 5.444-4.46 9.885-9.935 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a11.882 11.882 0 005.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411"/></svg><span>Continuar por WhatsApp</span></a>
+      <div class="actions" style="margin-top:14px;"><button class="btn btn-ghost" data-back>← Editar</button></div>
+    </div>
+  </div>
+  <footer>
+    <p>EcoPollo Premium • Pollo que sabe a pollo desde 2004 🐔</p>
+    <div class="social-links">
+      <a href="https://wa.me/50663144171" target="_blank">WhatsApp</a>
+      <a href="https://www.facebook.com/profile.php?id=61558089819855" target="_blank">Facebook</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+const WHATSAPP_NUMERO = "50663144171";
+const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywRA6-W2bR40T2Aa6a6egWa8aN5vGQ-iprr2HznDZhW84MEg846Qmc5BlzYjknZTs/exec";
+
+const productos = [
+  { codigo: "EP-001", nombre: "Pollo Entero Fresco", precio: 3500 },
+  { codigo: "EP-002", nombre: "Pechuga sin Hueso", precio: 5200 },
+  { codigo: "EP-003", nombre: "Pechuga con Hueso", precio: 4400 },
+  { codigo: "EP-004", nombre: "Muslos", precio: 3800 },
+  { codigo: "EP-005", nombre: "Encuentros (Cuartos)", precio: 3600 },
+  { codigo: "EP-006", nombre: "Alas", precio: 3900 },
+  { codigo: "EP-007", nombre: "Mollejas", precio: 3200 },
+  { codigo: "EP-008", nombre: "Hígados de Pollo", precio: 2400 },
+  { codigo: "EP-009", nombre: "Pollo en Trozos Mixto", precio: 3700 },
+  { codigo: "EP-010", nombre: "Pollo Marinado BBQ", precio: 4500 },
+];
+
+const estado = {
+  frecuencia: null,
+  volumen: null,
+  productosSeleccionados: {},
+  nombre: "",
+  zona: "",
+  factura: null,
+  razonSocial: "",
+  comentario: "",
+  segmento: null
+};
+
+let pasoActual = 1;
+
+function calcularSegmento() {
+  const f = estado.frecuencia;
+  const v = estado.volumen;
+  const factura = estado.factura === "si";
+  const scores = { cliente_final: 0, sodas_pequenos: 0, restaurantes_medianos: 0, hoteles_catering: 0, mayorista: 0 };
+  if (f === "esporadica") { scores.cliente_final += 4; scores.sodas_pequenos += 1; }
+  else if (f === "semanal") { scores.cliente_final += 2; scores.sodas_pequenos += 3; scores.restaurantes_medianos += 1; }
+  else if (f === "frecuente") { scores.sodas_pequenos += 2; scores.restaurantes_medianos += 3; scores.hoteles_catering += 2; scores.mayorista += 1; }
+  else if (f === "diaria") { scores.restaurantes_medianos += 2; scores.hoteles_catering += 3; scores.mayorista += 3; }
+  if (v === "muy_bajo") { scores.cliente_final += 4; scores.sodas_pequenos += 1; }
+  else if (v === "bajo") { scores.cliente_final += 1; scores.sodas_pequenos += 4; scores.restaurantes_medianos += 1; }
+  else if (v === "medio") { scores.sodas_pequenos += 1; scores.restaurantes_medianos += 4; scores.hoteles_catering += 2; }
+  else if (v === "alto") { scores.restaurantes_medianos += 1; scores.hoteles_catering += 4; scores.mayorista += 4; }
+  if (!factura) { scores.cliente_final += 3; }
+  else { scores.sodas_pequenos += 1; scores.restaurantes_medianos += 2; scores.hoteles_catering += 2; scores.mayorista += 2; scores.cliente_final -= 5; }
+  if (v === "alto" && f === "diaria" && factura) scores.mayorista += 2;
+  if (v === "alto" && f === "frecuente" && factura) scores.hoteles_catering += 2;
+  let max = -Infinity;
+  let ganador = "cliente_final";
+  for (const [seg, pts] of Object.entries(scores)) { if (pts > max) { max = pts; ganador = seg; } }
+  const valores = Object.values(scores).sort((a, b) => b - a);
+  const margen = valores[0] - valores[1];
+  let confianza = "alta";
+  if (margen <= 1) confianza = "baja";
+  else if (margen <= 3) confianza = "media";
+  const info = {
+    cliente_final: { nombre: "Cliente Final (Hogar)", descuento: 0 },
+    sodas_pequenos: { nombre: "Sodas / Restaurantes Pequeños", descuento: 12 },
+    restaurantes_medianos: { nombre: "Restaurantes Medianos", descuento: 20 },
+    hoteles_catering: { nombre: "Hoteles / Catering", descuento: 25 },
+    mayorista: { nombre: "Mayorista / Revendedor", descuento: 32 }
+  };
+  return { key: ganador, nombre: info[ganador].nombre, descuento: info[ganador].descuento, confianza: confianza };
+}
+
+function irAPaso(n) {
+  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+  document.querySelector(`.step[data-step="${n}"]`).classList.add("active");
+  document.querySelectorAll(".progress-dot").forEach((dot, i) => {
+    dot.classList.remove("active", "done");
+    if (i + 1 < n) dot.classList.add("done");
+    else if (i + 1 === n) dot.classList.add("active");
+  });
+  pasoActual = n;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.querySelectorAll('#opt-frecuencia .option').forEach(opt => {
+  opt.addEventListener("click", () => {
+    document.querySelectorAll('#opt-frecuencia .option').forEach(o => o.classList.remove("selected"));
+    opt.classList.add("selected");
+    estado.frecuencia = opt.dataset.value;
+    document.getElementById("btn-next-1").disabled = false;
+  });
+});
+document.getElementById("btn-next-1").addEventListener("click", () => irAPaso(2));
+
+document.querySelectorAll('#opt-volumen .option').forEach(opt => {
+  opt.addEventListener("click", () => {
+    document.querySelectorAll('#opt-volumen .option').forEach(o => o.classList.remove("selected"));
+    opt.classList.add("selected");
+    estado.volumen = opt.dataset.value;
+    document.getElementById("btn-next-2").disabled = false;
+  });
+});
+document.getElementById("btn-next-2").addEventListener("click", () => irAPaso(3));
+
+function renderCatalogo() {
+  const grid = document.getElementById("catalogo-productos");
+  grid.innerHTML = productos.map(p => `
+    <button class="producto-card" data-codigo="${p.codigo}">
+      <span class="producto-code">${p.codigo}</span>
+      <span class="producto-nombre">${p.nombre}</span>
+      <span class="producto-precio">₡${p.precio.toLocaleString('es-CR')}/kg</span>
+      <input type="number" class="cantidad-input" placeholder="kg" min="0" step="0.5">
+    </button>
+  `).join("");
+  document.querySelectorAll(".producto-card").forEach(card => {
+    card.addEventListener("click", () => {
+      card.classList.toggle("selected");
+      actualizarSeleccion();
+    });
+    const input = card.querySelector(".cantidad-input");
+    input.addEventListener("click", (e) => e.stopPropagation());
+    input.addEventListener("change", () => {
+      if (input.value && parseFloat(input.value) > 0) {
+        card.classList.add("selected");
+      } else {
+        card.classList.remove("selected");
+      }
+      actualizarSeleccion();
+    });
+  });
+}
+
+function actualizarSeleccion() {
+  estado.productosSeleccionados = {};
+  let haySeleccion = false;
+  document.querySelectorAll(".producto-card.selected").forEach(card => {
+    const codigo = card.dataset.codigo;
+    const input = card.querySelector(".cantidad-input");
+    const cantidad = parseFloat(input.value) || 0;
+    if (cantidad > 0) {
+      estado.productosSeleccionados[codigo] = cantidad;
+      haySeleccion = true;
+    }
+  });
+  const resumen = document.getElementById("resumen-productos");
+  const resumenTexto = document.getElementById("resumen-texto");
+  if (haySeleccion) {
+    const items = Object.entries(estado.productosSeleccionados)
+      .map(([cod, cant]) => {
+        const prod = productos.find(p => p.codigo === cod);
+        return `${prod.nombre}: ${cant} kg`;
+      })
+      .join(" • ");
+    resumenTexto.textContent = "📦 " + items;
+    resumen.style.display = "block";
+    document.getElementById("btn-next-3").disabled = false;
+  } else {
+    resumen.style.display = "none";
+    document.getElementById("btn-next-3").disabled = true;
+  }
+}
+
+renderCatalogo();
+document.getElementById("btn-next-3").addEventListener("click", () => irAPaso(4));
+
+document.querySelectorAll('#toggle-factura .toggle-btn').forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll('#toggle-factura .toggle-btn').forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    estado.factura = btn.dataset.factura;
+    const campoExtra = document.getElementById("campo-factura");
+    if (estado.factura === "si") {
+      campoExtra.classList.add("show");
+    } else {
+      campoExtra.classList.remove("show");
+      document.getElementById("razon-social").value = "";
+    }
+  });
+});
+
+document.getElementById("btn-next-4").addEventListener("click", () => {
+  const nombre = document.getElementById("nombre").value.trim();
+  const zona = document.getElementById("zona").value.trim();
+  if (!nombre || !zona) {
+    alert("Por favor completa los campos obligatorios (nombre y zona).");
+    return;
+  }
+  if (!estado.factura) {
+    alert("Por favor indícanos si necesitas factura electrónica.");
+    return;
+  }
+  estado.nombre = nombre;
+  estado.zona = zona;
+  estado.razonSocial = document.getElementById("razon-social").value.trim();
+  estado.comentario = document.getElementById("comentario").value.trim();
+  estado.segmento = calcularSegmento();
+  renderResumen();
+  irAPaso(5);
+});
+
+function renderResumen() {
+  let html = `
+    <div class="summary-row">
+      <span class="label">Cliente</span>
+      <span class="value">${escapeHtml(estado.nombre)}</span>
+    </div>
+    <div class="summary-row">
+      <span class="label">Zona</span>
+      <span class="value">${escapeHtml(estado.zona)}</span>
+    </div>
+    <div class="summary-row">
+      <span class="label">Frecuencia</span>
+      <span class="value">${frecuenciaLabel(estado.frecuencia)}</span>
+    </div>
+    <div class="summary-row">
+      <span class="label">Volumen</span>
+      <span class="value">${volumenLabel(estado.volumen)}</span>
+    </div>
+  `;
+  const prodTexto = Object.entries(estado.productosSeleccionados)
+    .map(([cod, cant]) => {
+      const prod = productos.find(p => p.codigo === cod);
+      return `${prod.nombre} (${cant} kg)`;
+    })
+    .join(", ");
+  if (prodTexto) {
+    html += `
+    <div class="summary-row">
+      <span class="label">Productos</span>
+      <span class="value">${prodTexto}</span>
+    </div>`;
+  }
+  html += `
+    <div class="summary-row">
+      <span class="label">Factura</span>
+      <span class="value">${estado.factura === "si" ? "Sí" : "No"}</span>
+    </div>
+  `;
+  if (estado.razonSocial) {
+    html += `
+    <div class="summary-row">
+      <span class="label">A nombre de</span>
+      <span class="value">${escapeHtml(estado.razonSocial)}</span>
+    </div>`;
+  }
+  document.getElementById("summary").innerHTML = html;
+  const mensaje = construirMensajeWhatsApp();
+  const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
+  document.getElementById("btn-whatsapp").href = url;
+  document.getElementById("btn-whatsapp").style.display = "flex";
+  guardarLead();
+}
+
+function guardarLead() {
+  const loading = document.getElementById("loading");
+  loading.classList.add("show");
+  
+  const prodTexto = Object.entries(estado.productosSeleccionados)
+    .map(([cod, cant]) => {
+      const prod = productos.find(p => p.codigo === cod);
+      return `${prod.codigo} (${cant} kg)`;
+    })
+    .join("; ");
+
+  const lead = {
+    fecha: new Date().toISOString(),
+    nombre: estado.nombre,
+    zona: estado.zona,
+    frecuencia: estado.frecuencia,
+    volumen: estado.volumen,
+    factura: estado.factura,
+    razonSocial: estado.razonSocial,
+    productos: prodTexto,
+    comentario: estado.comentario,
+    segmento: estado.segmento.nombre,
+    descuento: estado.segmento.descuento,
+    confianza: estado.segmento.confianza
+  };
+
+  // GUARDAR EN LOCALSTORAGE (siempre funciona)
+  let leads = JSON.parse(localStorage.getItem("ecopollo-leads") || "[]");
+  leads.push(lead);
+  localStorage.setItem("ecopollo-leads", JSON.stringify(leads));
+  console.log("✅ Lead guardado en localStorage");
+
+  // INTENTAR GUARDAR EN GOOGLE SHEETS (si funciona)
+  const datosParaGuardar = {
+    nombre: estado.nombre,
+    zona: estado.zona,
+    frecuencia: estado.frecuencia,
+    volumen: estado.volumen,
+    factura: estado.factura,
+    razonSocial: estado.razonSocial,
+    productosSeleccionados: prodTexto,
+    comentario: estado.comentario,
+    segmento: estado.segmento.nombre,
+    descuento: estado.segmento.descuento,
+    confianza: estado.segmento.confianza
+  };
+
+  fetch(GOOGLE_APPS_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify(datosParaGuardar)
+  })
+  .then(() => {
+    console.log("✅ Lead también enviado a Google Sheets");
+    loading.classList.remove("show");
+  })
+  .catch(error => {
+    console.warn("⚠️ Google Sheets no disponible, pero guardado en localStorage", error);
+    loading.classList.remove("show");
+  });
+}
+
+function construirMensajeWhatsApp() {
+  const seg = estado.segmento;
+  let msg = `🐔 *EcoPollo Premium*\n\n`;
+  msg += `*Cliente:* ${estado.nombre}\n`;
+  msg += `*Zona:* ${estado.zona}\n\n`;
+  msg += `*Frecuencia:* ${frecuenciaLabel(estado.frecuencia)}\n`;
+  msg += `*Volumen por pedido:* ${volumenLabel(estado.volumen)}\n`;
+  msg += `*Factura electrónica:* ${estado.factura === "si" ? "Sí" : "No"}`;
+  if (estado.razonSocial) msg += ` — _${estado.razonSocial}_`;
+  msg += `\n`;
+  const prodTexto = Object.entries(estado.productosSeleccionados)
+    .map(([cod, cant]) => {
+      const prod = productos.find(p => p.codigo === cod);
+      return `${prod.nombre}: ${cant} kg`;
+    })
+    .join("\n");
+  if (prodTexto) {
+    msg += `\n*Productos solicitados:*\n${prodTexto}\n`;
+  }
+  if (estado.comentario) {
+    msg += `\n📝 *Nota:*\n${estado.comentario}\n`;
+  }
+  msg += `\nQuiero cotizar estos productos 👋`;
+  return msg;
+}
+
+function frecuenciaLabel(f) { return { esporadica: "De vez en cuando", semanal: "Semanal", frecuente: "Varias veces por semana", diaria: "Diario" }[f] || "—"; }
+function volumenLabel(v) { return { muy_bajo: "Hasta 5 kg", bajo: "5–20 kg", medio: "20–80 kg", alto: "Más de 80 kg" }[v] || "—"; }
+function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+// MODAL ADMIN
+const ADMIN_PASSWORD = "ecopollo2024";   // Tu contraseña (admin total)
+const CEO_PASSWORD   = "ecopollo-ceo";    // Contraseña del CEO (solo ver)
+
+function abrirModalAdmin() {
+  document.getElementById("modal-admin").classList.add("show");
+  document.getElementById("admin-password").value = "";
+  document.getElementById("modal-error").textContent = "";
+  setTimeout(() => document.getElementById("admin-password").focus(), 100);
+}
+
+function cerrarModalAdmin() {
+  document.getElementById("modal-admin").classList.remove("show");
+  document.getElementById("admin-password").value = "";
+  document.getElementById("modal-error").textContent = "";
+}
+
+function verificarAdmin() {
+  const pwd = document.getElementById("admin-password").value;
+  if (pwd === ADMIN_PASSWORD || pwd === CEO_PASSWORD) {
+    localStorage.setItem("ecopollo-rol", pwd === ADMIN_PASSWORD ? "admin" : "ceo");
+    cerrarModalAdmin();
+    window.location.href = "ecopollo-admin-COMPLETO.html";
+  } else {
+    document.getElementById("modal-error").textContent = "❌ Contraseña incorrecta";
+    document.getElementById("admin-password").value = "";
+    document.getElementById("admin-password").focus();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const pwdInput = document.getElementById("admin-password");
+  if (pwdInput) {
+    pwdInput.addEventListener("keypress", (e) => { if (e.key === "Enter") verificarAdmin(); });
+  }
+  const overlay = document.getElementById("modal-admin");
+  if (overlay) {
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) cerrarModalAdmin(); });
+  }
+});
+
+document.querySelectorAll("[data-back]").forEach(btn => {
+  btn.addEventListener("click", () => irAPaso(pasoActual - 1));
+});
+</script>
+</body>
+</html>
