@@ -172,6 +172,11 @@ tbody tr:hover td:first-child { border-left: 3px solid #F0C300; }
 .badge-baja { background: #f8d7da; color: #721c24; }
 .descuento { font-weight: 700; color: #6BA644; font-size: 16px; }
 .empty { text-align: center; padding: 40px; color: rgba(255,255,255,0.3); }
+.estado-select { padding:5px 8px; border-radius:8px; font-size:11px; font-weight:700; border:none; cursor:pointer; font-family:inherit; }
+.estado-proceso { background:rgba(240,195,0,0.2); color:#C8A200; }
+.estado-camino { background:rgba(24,119,242,0.15); color:#1877F2; }
+.estado-aprobado { background:rgba(107,166,68,0.2); color:#2D5A1B; }
+.estado-cancelado { background:rgba(153,27,27,0.2); color:#fca5a5; }
 .btn-cancelar { background: rgba(153,27,27,0.25); color: #fca5a5; border: 1px solid rgba(153,27,27,0.4); padding: 7px 14px; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: inherit; transition: all 0.2s; }
 .btn-cancelar:hover { background: rgba(153,27,27,0.4); }
 
@@ -526,9 +531,17 @@ function renderizar(arr) {
     var conf = (l.confianza || 'baja').toLowerCase();
     var dirNeg = l.direccionNegocio ? '<br><a href="' + l.direccionNegocio + '" target="_blank" style="font-size:10px;color:#6BA644;">Ver negocio</a>' : '';
     var nomSeguro = (l.nombre || '').split("'").join("");
+    var estadoPed = l.estado || 'En proceso';
+    var estadoCls = estadoPed === 'En camino' ? 'estado-camino' : estadoPed === 'Aprobado' ? 'estado-aprobado' : estadoPed === 'Cancelado' ? 'estado-cancelado' : 'estado-proceso';
+    var estadoSel = rolActual === 'admin'
+      ? '<select class="estado-select ' + estadoCls + '" onchange="cambiarEstado(' + idxReal + ', this.value)" onclick="event.stopPropagation()">' +
+        ['En proceso','En camino','Aprobado','Cancelado'].map(function(e) {
+          return '<option value="' + e + '"' + (e === estadoPed ? ' selected' : '') + '>' + e + '</option>';
+        }).join('') + '</select>'
+      : '<span class="estado-select ' + estadoCls + '">' + estadoPed + '</span>';
     var accion = rolActual === 'admin'
-      ? '<button class="btn-cancelar" onclick="abrirModal(' + idxReal + ', \'' + nomSeguro + '\')">🗑 Cancelar</button>'
-      : '';
+      ? estadoSel + ' <button class="btn-cancelar" onclick="event.stopPropagation();abrirModal(' + idxReal + ', \'' + nomSeguro + '\')">🗑</button>'
+      : estadoSel;
     html += '<tr style="cursor:pointer;" onclick="abrirDetalle(' + idxReal + ')">' +
       '<td style="font-size:11px;color:rgba(255,255,255,0.5)">' + reg + '</td>' +
       '<td><strong style="color:#6BA644">' + (l.nombre||'') + '</strong><br><small style="color:rgba(255,255,255,0.4)">' + (l.zona||'') + '</small>' + dirNeg + '</td>' +
@@ -816,6 +829,31 @@ function abrirModalCliente(i) {
 
   document.getElementById('modal-cliente-content').innerHTML = html;
   document.getElementById('modal-cliente').classList.add('show');
+}
+
+function cambiarEstado(idx, nuevoEstado) {
+  var todos = JSON.parse(localStorage.getItem('ecopollo-leads') || '[]');
+  if (todos[idx]) {
+    todos[idx].estado = nuevoEstado;
+    localStorage.setItem('ecopollo-leads', JSON.stringify(todos));
+    datos = todos;
+    // Actualizar color del select
+    var selects = document.querySelectorAll('.estado-select');
+    selects.forEach(function(s) {
+      s.className = 'estado-select';
+      var v = s.value || s.textContent;
+      if (v === 'En camino') s.classList.add('estado-camino');
+      else if (v === 'Aprobado') s.classList.add('estado-aprobado');
+      else if (v === 'Cancelado') s.classList.add('estado-cancelado');
+      else s.classList.add('estado-proceso');
+    });
+    // Notificar via Google Sheets
+    fetch(GOOGLE_URL || '', {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify({ accion: 'estado', idx: idx, estado: nuevoEstado, nombre: todos[idx].nombre })
+    }).catch(function(){});
+  }
 }
 
 function cerrarModalCliente() {

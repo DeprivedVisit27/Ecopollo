@@ -154,6 +154,21 @@ header { text-align: center; margin-bottom: 24px; animation: fadeUp 0.6s ease-ou
 .loading.show { display: block; }
 .spinner { display: inline-block; width: 30px; height: 30px; border: 3px solid var(--gris-suave); border-top-color: var(--dorado); border-radius: 50%; animation: spin 0.8s linear infinite; }
 
+.adicionales-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+.adicionales-tab { padding:7px 14px; background:white; border:2px solid var(--gris-suave); border-radius:20px; font-family:inherit; font-size:12px; font-weight:600; color:var(--gris); cursor:pointer; transition:all 0.2s; }
+.adicionales-tab:hover { border-color:var(--dorado); color:var(--verde-oscuro); }
+.adicionales-tab.active { background:rgba(240,195,0,0.12); border-color:var(--dorado); color:var(--verde-oscuro); }
+.adicionales-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; margin-bottom:16px; max-height:380px; overflow-y:auto; padding-right:4px; }
+.adicional-card { background:white; border:2px solid var(--gris-suave); border-radius:12px; padding:12px; cursor:pointer; transition:all 0.2s; text-align:center; }
+.adicional-card:hover { border-color:var(--dorado); transform:translateY(-1px); }
+.adicional-card.selected { border-color:var(--dorado); background:rgba(240,195,0,0.08); }
+.adic-cod { display:block; font-size:10px; color:var(--verde-claro); font-weight:700; margin-bottom:3px; }
+.adic-nom { display:block; font-size:11px; font-weight:600; color:var(--tinta); margin-bottom:5px; line-height:1.3; }
+.adic-precio { display:block; font-size:12px; font-weight:700; color:var(--verde-oscuro); }
+.adic-desc { display:block; font-size:10px; color:#BC4749; font-weight:600; }
+.adic-cant { width:100%; margin-top:6px; padding:5px; font-size:12px; border:1px solid var(--gris-suave); border-radius:6px; text-align:center; }
+.adicional-card.selected .adic-cant { border-color:var(--dorado); }
+
 footer { text-align: center; margin-top: 28px; font-size: 12px; color: var(--gris); }
 .footer-logo { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--dorado); margin: 0 auto 8px; display: block; }
 .footer-socials { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
@@ -233,6 +248,7 @@ footer { text-align: center; margin-top: 28px; font-size: 12px; color: var(--gri
     <div class="progress-dot"></div>
     <div class="progress-dot"></div>
     <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
   </div>
 
   <div class="card">
@@ -263,7 +279,7 @@ footer { text-align: center; margin-top: 28px; font-size: 12px; color: var(--gri
     </div>
 
     <div class="step" data-step="3">
-      <div class="step-label">Paso 3 de 5</div>
+      <div class="step-label">Paso 3 de 6</div>
       <h2>¿Qué productos necesitas?</h2>
       <p class="help">Selecciona los productos e indica la cantidad en kg.</p>
       <div class="catalogo"><div class="catalogo-label">Catálogo EcoPollo Cartago</div><div class="productos-grid" id="catalogo-productos"></div></div>
@@ -272,10 +288,14 @@ footer { text-align: center; margin-top: 28px; font-size: 12px; color: var(--gri
     </div>
 
     <div class="step" data-step="4">
-      <div class="step-label">Paso 4 de 5</div>
+      <div class="step-label">Paso 4 de 6</div>
       <h2>Tus datos de contacto</h2>
       <p class="help">Para preparar tu pedido y coordinar la entrega.</p>
       <div class="field"><label>Nombre completo <span class="required">*</span></label><input type="text" id="nombre" placeholder="Ej: Juan Pérez"></div>
+      <div class="field-row">
+        <div class="field"><label>Correo electrónico <span class="required">*</span></label><input type="email" id="correo-cliente" placeholder="tu@correo.com"></div>
+        <div class="field"><label>Teléfono / WhatsApp <span class="required">*</span></label><input type="tel" id="telefono-cliente" placeholder="8888-8888"></div>
+      </div>
       <div class="field">
         <label>Zona o dirección de entrega <span class="required">*</span></label>
         <button class="location-btn" onclick="obtenerUbicacion()">📍 Usar mi ubicación actual</button>
@@ -299,6 +319,17 @@ footer { text-align: center; margin-top: 28px; font-size: 12px; color: var(--gri
     </div>
 
     <div class="step" data-step="5">
+      <div class="step-label">Paso 5 de 6</div>
+      <h2>¿Algo más? <span>Productos adicionales</span></h2>
+      <p class="help">Agrega embutidos, congelados, papas u otros productos. Los precios incluyen tu descuento.</p>
+      <div class="adicionales-tabs" id="adicionales-tabs"></div>
+      <div class="adicionales-grid" id="adicionales-grid"></div>
+      <div class="resumen-productos" id="resumen-adicionales" style="display:none;"><p id="resumen-adicionales-texto"></p></div>
+      <div class="actions"><button class="btn btn-ghost" data-back>← Atrás</button><button class="btn btn-primary" id="btn-next-5">Continuar →</button></div>
+    </div>
+
+    <div class="step" data-step="6">
+      <div class="step-label" style="text-align:center;display:block;">Paso 6 de 6</div>
       <div class="confirm-icon">✓</div>
       <div class="step-label" style="text-align:center;display:block;">¡Listo!</div>
       <h2 style="text-align:center;">Conectemos por WhatsApp</h2>
@@ -323,7 +354,7 @@ footer { text-align: center; margin-top: 28px; font-size: 12px; color: var(--gri
 </div>
 <script>
 var WHATSAPP_NUMERO = "50663144171";
-var GOOGLE_URL = "https://script.google.com/macros/s/AKfycbwekM-w5Lxcia8l65hEvw3HqeGqwWye1g6oXIgx_nKp7dRn3cgs4rYM93T07ID0gCRW/exec";
+var GOOGLE_URL = "https://script.google.com/macros/s/AKfycbyI2X-N8MMXRIJjM9xFgGl900DfEQRsEcppHNrofzNhrs8VgkD1-dcGik89svjbtory/exec";
 var ADMIN_PASS = atob("ZWNvcG9sbG8yMDI0");
 var CEO_PASS = atob("ZWNvcG9sbG8tY2Vv");
 
@@ -350,6 +381,8 @@ var productos = [
   {codigo:"EP-020",nombre:"Empanizador EcoPollo",precio:2400,unidad:"UND",categoria:"CONDIMENTOS"},
 ];
 
+var adicionalSeleccionados = {};
+var catAdicActiva = 'EMBUTIDOS';
 var estado = {
   frecuencia:null, volumen:null, productosSeleccionados:{},
   nombre:"", zona:"", coordenadas:null,
@@ -557,23 +590,71 @@ document.getElementById("btn-next-4").addEventListener("click", function() {
   var nom = document.getElementById("nombre").value.trim();
   var zon = document.getElementById("zona").value.trim();
   var fec = document.getElementById("fecha-entrega").value;
+  var correo = document.getElementById("correo-cliente").value.trim();
+  var tel = document.getElementById("telefono-cliente").value.trim();
   if (!nom || !zon) { alert("Completa nombre y zona de entrega."); return; }
+  if (!correo || !tel) { alert("Ingresa tu correo y teléfono."); return; }
   if (!fec) { alert("Selecciona una fecha de entrega."); return; }
   if (!estado.factura) { alert("Indica si necesitas factura electronica."); return; }
   estado.nombre = nom; estado.zona = zon;
+  estado.correoCliente = correo;
+  estado.telefonoCliente = tel;
   estado.fechaEntrega = fec;
   estado.horaEntrega = document.getElementById("hora-entrega").value;
   estado.razonSocial = document.getElementById("razon-social").value.trim();
   estado.comentario = document.getElementById("comentario").value.trim();
   estado.direccionNegocio = document.getElementById("direccion-negocio").value.trim();
   estado.segmento = calcularSegmento();
-  renderResumen();
+  // Renderizar adicionales con descuento del segmento
+  renderAdicionales();
   irAPaso(5);
+});
+
+document.getElementById("btn-next-5").addEventListener("click", function() {
+  sincronizarCarrito();
+renderResumen();
+  irAPaso(6);
 });
 
 function fmtFecha(f) {
   if (!f) return "";
   return new Date(f + "T12:00:00").toLocaleDateString("es-CR", {weekday:"long", day:"numeric", month:"long"});
+}
+
+function sincronizarCarrito() {
+  // Agregar productos del formulario al carrito
+  Object.keys(estado.productosSeleccionados).forEach(function(cod) {
+    var prod = productos.find(function(p) { return p.codigo === cod; });
+    if (prod) {
+      CarritoUI.add({
+        cod: cod,
+        nom: prod.nombre,
+        precio: prod.precio,
+        und: prod.unidad || 'KG',
+        cant: estado.productosSeleccionados[cod],
+        cat: 'POLLO'
+      });
+    }
+  });
+  // Agregar adicionales
+  Object.keys(adicionalSeleccionados).forEach(function(cod) {
+    var prod = null;
+    Object.keys(ADICIONALES).forEach(function(cat) {
+      ADICIONALES[cat].forEach(function(p) {
+        if (p.cod === cod) prod = p;
+      });
+    });
+    if (prod) {
+      CarritoUI.add({
+        cod: cod,
+        nom: prod.nom,
+        precio: prod.precio,
+        und: prod.und || 'UND',
+        cant: adicionalSeleccionados[cod],
+        cat: 'ADICIONAL'
+      });
+    }
+  });
 }
 
 function renderResumen() {
@@ -621,7 +702,11 @@ function guardarLead() {
     direccionNegocio: estado.direccionNegocio,
     segmento: estado.segmento.nombre,
     descuento: estado.segmento.descuento,
-    confianza: estado.segmento.confianza
+    confianza: estado.segmento.confianza,
+    correo: estado.correoCliente || "",
+    telefono: estado.telefonoCliente || "",
+    adicionales: JSON.stringify(adicionalSeleccionados),
+    estado: "En proceso"
   };
   var leads = JSON.parse(localStorage.getItem("ecopollo-leads") || "[]");
   leads.push(lead);
@@ -635,23 +720,118 @@ function guardarLead() {
 function buildWA() {
   var fd = fmtFecha(estado.fechaEntrega);
   var hora = estado.horaEntrega ? " - " + estado.horaEntrega : "";
-  var m = "EcoPollo Cartago\n\n";
-  m += "Cliente: " + estado.nombre + "\n";
-  m += "Zona: " + estado.zona + "\n";
-  m += "Entrega deseada: " + fd + hora + "\n\n";
-  m += "Frecuencia: " + fLabel(estado.frecuencia) + "\n";
-  m += "Volumen: " + vLabel(estado.volumen) + "\n";
-  m += "Factura: " + (estado.factura === "si" ? "Si" : "No");
+  var m = "🐔 *EcoPollo Cartago*\n\n";
+  m += "👤 *Cliente:* " + estado.nombre + "\n";
+  m += "📍 *Zona:* " + estado.zona + "\n";
+  m += "📅 *Entrega:* " + fd + hora + "\n\n";
+  m += "🔁 *Frecuencia:* " + fLabel(estado.frecuencia) + "\n";
+  m += "📦 *Volumen:* " + vLabel(estado.volumen) + "\n";
+  m += "🧾 *Factura:* " + (estado.factura === "si" ? "Sí" : "No");
   if (estado.razonSocial) m += " - " + estado.razonSocial;
   m += "\n";
-  if (estado.direccionNegocio) m += "Direccion del negocio: " + estado.direccionNegocio + "\n";
+  if (estado.direccionNegocio) m += "🏪 *Negocio:* " + estado.direccionNegocio + "\n";
   var pt = Object.keys(estado.productosSeleccionados).map(function(c) {
-    return productos.find(function(p) { return p.codigo === c; }).nombre + ": " + estado.productosSeleccionados[c] + " kg";
+    var prod = productos.find(function(p) { return p.codigo === c; });
+    return "  • " + prod.nombre + ": " + estado.productosSeleccionados[c] + " " + prod.unidad;
   }).join("\n");
-  if (pt) m += "\nProductos:\n" + pt + "\n";
-  if (estado.comentario) m += "\nNota: " + estado.comentario + "\n";
-  m += "\nQuiero cotizar estos productos";
+  if (pt) m += "\n🛒 *Productos:*\n" + pt + "\n";
+  if (estado.comentario) m += "\n📝 *Nota:* " + estado.comentario + "\n";
+  var adicKeys = Object.keys(adicionalSeleccionados);
+  if (adicKeys.length) {
+    m += "\n➕ *Productos adicionales:*\n";
+    Object.keys(ADICIONALES).forEach(function(cat) {
+      ADICIONALES[cat].forEach(function(p) {
+        if (adicionalSeleccionados[p.cod]) {
+          var desc = estado.segmento ? estado.segmento.descuento : 0;
+          var precio = desc > 0 ? Math.round(p.precio*(1-desc/100)) : p.precio;
+          m += "  • " + p.nom + " x" + adicionalSeleccionados[p.cod] + " · ₡" + precio.toLocaleString('es-CR') + "\n";
+        }
+      });
+    });
+  }
+  m += "\n¡Quiero cotizar mi pedido! 👋";
   return m;
+}
+
+function renderAdicionales() {
+  // Tabs de categorías
+  var tabsEl = document.getElementById('adicionales-tabs');
+  tabsEl.innerHTML = Object.keys(ADICIONALES).map(function(cat) {
+    return '<button class="adicionales-tab' + (cat === catAdicActiva ? ' active' : '') +
+      '" onclick="switchAdicCat(\'' + cat + '\')">' + ADIC_LABELS[cat] + '</button>';
+  }).join('');
+  renderAdicGrid(catAdicActiva);
+}
+
+function switchAdicCat(cat) {
+  catAdicActiva = cat;
+  var tabs = document.querySelectorAll('.adicionales-tab');
+  Object.keys(ADICIONALES).forEach(function(c, i) {
+    tabs[i].classList.toggle('active', c === cat);
+  });
+  renderAdicGrid(cat);
+}
+
+function renderAdicGrid(cat) {
+  var desc = estado.segmento ? estado.segmento.descuento : 0;
+  var grid = document.getElementById('adicionales-grid');
+  grid.innerHTML = ADICIONALES[cat].map(function(p) {
+    var precioFinal = desc > 0 ? Math.round(p.precio * (1 - desc/100)) : p.precio;
+    var sel = adicionalSeleccionados[p.cod] ? ' selected' : '';
+    return '<div class="adicional-card' + sel + '" data-cod="' + p.cod + '" onclick="toggleAdic(this)">' +
+      '<span class="adic-cod">' + p.cod + '</span>' +
+      '<span class="adic-nom">' + p.nom + '</span>' +
+      '<span class="adic-precio">₡' + precioFinal.toLocaleString('es-CR') + '/' + p.und + '</span>' +
+      (desc > 0 ? '<span class="adic-desc">-' + desc + '% aplicado</span>' : '') +
+      '<input type="number" class="adic-cant" placeholder="Cant." min="1" step="1" value="' +
+        (adicionalSeleccionados[p.cod] ? adicionalSeleccionados[p.cod] : '') + '">' +
+    '</div>';
+  }).join('');
+  // Re-bind inputs
+  document.querySelectorAll('.adicional-card').forEach(function(card) {
+    var inp = card.querySelector('.adic-cant');
+    inp.addEventListener('click', function(e) { e.stopPropagation(); });
+    inp.addEventListener('input', function() {
+      var n = parseFloat(this.value);
+      if (n > 0) { card.classList.add('selected'); adicionalSeleccionados[card.dataset.cod] = n; }
+      else { card.classList.remove('selected'); delete adicionalSeleccionados[card.dataset.cod]; }
+      actualizarResumenAdic();
+    });
+  });
+}
+
+function toggleAdic(card) {
+  card.classList.toggle('selected');
+  var cod = card.dataset.cod;
+  if (card.classList.contains('selected')) {
+    var inp = card.querySelector('.adic-cant');
+    var n = parseFloat(inp.value) || 1;
+    inp.value = n;
+    adicionalSeleccionados[cod] = n;
+  } else {
+    delete adicionalSeleccionados[cod];
+    card.querySelector('.adic-cant').value = '';
+  }
+  actualizarResumenAdic();
+}
+
+function actualizarResumenAdic() {
+  var res = document.getElementById('resumen-adicionales');
+  var keys = Object.keys(adicionalSeleccionados);
+  if (!keys.length) { res.style.display = 'none'; return; }
+  var desc = estado.segmento ? estado.segmento.descuento : 0;
+  var lineas = [];
+  Object.keys(ADICIONALES).forEach(function(cat) {
+    ADICIONALES[cat].forEach(function(p) {
+      if (adicionalSeleccionados[p.cod]) {
+        var cant = adicionalSeleccionados[p.cod];
+        var precio = desc > 0 ? Math.round(p.precio*(1-desc/100)) : p.precio;
+        lineas.push(p.nom + ' x' + cant + ' · ₡' + precio.toLocaleString('es-CR'));
+      }
+    });
+  });
+  document.getElementById('resumen-adicionales-texto').textContent = '➕ ' + lineas.join(' | ');
+  res.style.display = 'block';
 }
 
 function fLabel(f) {
@@ -697,5 +877,6 @@ document.addEventListener("keydown", function(e) {
   }
 });
 </script>
+<script src="carrito.js"></script>
 </body>
 </html>

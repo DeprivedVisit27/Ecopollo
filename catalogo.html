@@ -52,6 +52,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--c);min-height:100vh;}
 .lbn{padding:9px 18px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;border-radius:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
 .lbn:hover{background:rgba(240,195,0,0.2);border-color:var(--d);}
 .lbn:disabled{opacity:0.3;cursor:not-allowed;}
+.btn-adic-carrito{width:100%;padding:8px;background:rgba(240,195,0,0.15);color:#2D5A1B;border:1.5px solid rgba(240,195,0,0.4);border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-adic-carrito:hover{background:rgba(240,195,0,0.3);}
 .lc{color:rgba(255,255,255,0.6);font-size:12px;}
 footer{text-align:center;padding:20px;background:var(--v);color:rgba(255,255,255,0.7);font-size:12px;}
 footer a{color:var(--d);text-decoration:none;}
@@ -115,7 +117,11 @@ function init(){
       var d=P[pg];if(!d)return;
       var card=document.createElement('div');
       card.className='card';
-      card.innerHTML='<img src="'+d.i+'" loading="lazy" alt="'+d.d+'"><div class="cf"><span class="cd">'+d.d+'</span><span class="cn">Pág.'+pg+'</span></div>';
+      card.innerHTML='<img src="'+d.i+'" loading="lazy" alt="'+d.d+'">' +
+        '<div class="cf"><span class="cd">'+d.d+'</span><span class="cn">Pág.'+pg+'</span></div>' +
+        '<div style="padding:0 10px 10px;">' +
+          '<button class="btn-adic-carrito" onclick="event.stopPropagation();agregarDelCatalogo('+pg+')">🛒 Agregar al carrito</button>' +
+        '</div>';
       card.onclick=function(){openLb(cat,pg);};
       grid.appendChild(card);
     });
@@ -154,7 +160,20 @@ document.addEventListener('keydown',function(e){
   else if(e.key==='Escape')closeLb();
 });
 document.getElementById('lb').addEventListener('click',function(e){if(e.target===this)closeLb();});
+function agregarDelCatalogo(pg) {
+  var d = P[pg];
+  if (!d) return;
+  CarritoUI.add({
+    cod: 'CAT-' + pg,
+    nom: d.d,
+    precio: 0,
+    und: 'UND',
+    cant: 1,
+    cat: d.c
+  });
+}
 init();
 </script>
+<script src="carrito.js"></script>
 </body>
 </html>
